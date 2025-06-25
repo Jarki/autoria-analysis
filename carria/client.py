@@ -1,7 +1,5 @@
 import httpx
 
-from . import constants as c
-
 
 class HTTPClient:
     def __init__(self, base_url: str="https://auto.ria.com/uk/"):
@@ -24,7 +22,7 @@ class HTTPClient:
             data=data,
         )
         if response.status_code != 200:
-            raise c.CustomError(f"Request failed with status code {response.status_code}")
+            raise Exception(f"Request failed with status code {response.status_code}")
         return response.text
     
     async def _make_browser_request(
