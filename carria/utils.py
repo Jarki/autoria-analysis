@@ -59,7 +59,7 @@ def get_location(section: bs4.element.Tag) -> str:
 
 @__try_find
 def get_engine(section: bs4.element.Tag) -> str:
-    return __try_get_text(section.find_all("li", class_="item-char")[2])
+    return section.find("div", class_="hide").get("data-modification-name")
 
 @__try_find
 def get_transmission(section: bs4.element.Tag) -> str:
@@ -74,24 +74,28 @@ def get_state_num(section: bs4.element.Tag) -> str:
     return __try_get_text(section.find("span", class_="state-num").find(string=True, recursive=False))
 
 @__try_find
-def get_car_name(section: bs4.element.Tag) -> str:
-    return __try_get_text(section.find("a", class_="address").find("span"))
-
-@__try_find
 def get_year(section: bs4.element.Tag) -> str:
     return __try_get_text(section.find("a", class_="address").find_all(string=True, recursive=False)[1])
 
 @__try_find
 def get_generation(section: bs4.element.Tag) -> str:
-    generation: str = __try_get_text(section.find("div", class_="generation").find("span"))
-    generation += "".join(section.find("div", class_="generation").find_all(string=True, recursive=False))
-    generation = generation.strip()
+    return section.find("div", class_="hide").get("data-generation-name")
 
 @__try_find
 def get_link(section: bs4.element.Tag) -> str:
     return section.find("a", class_="m-link-ticket").get("href")
 
+@__try_find
+def get_make(section: bs4.element.Tag) -> models.CarInfo:
+    return section.find("div", class_="hide").get("data-mark-name")
+
+@__try_find
+def get_model(section: bs4.element.Tag) -> models.CarInfo:
+    return section.find("div", class_="hide").get("data-model-name")
+
 def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
+    with open("car.html", "w") as f:
+        f.write(section.prettify())
     price, curr = get_price_and_currency(section)
     mileage = get_mileage(section)
     location = get_location(section)
@@ -99,7 +103,8 @@ def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
     transmission = get_transmission(section)
     vin = get_vin(section) or None
     state_num = get_state_num(section)
-    car_name = get_car_name(section)
+    make = get_make(section) 
+    model = get_model(section)
     year = get_year(section)
     generation = get_generation(section)
     link = get_link(section)
@@ -109,7 +114,8 @@ def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
     mileage = utils.parse_integer(mileage)
     
     return models.CarInfo(
-        name=car_name,
+        make=make,
+        model=model,
         year=year, 
         generation=generation,
         price=price,

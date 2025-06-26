@@ -28,7 +28,8 @@ CREATE TABLE IF NOT EXISTS cars (
     added_at TIMESTAMP,
     updated_at TIMESTAMP,
 
-    name VARCHAR,
+    make VARCHAR,
+    model VARCHAR,
     year INTEGER,
     generation VARCHAR,
     price INTEGER,
@@ -46,7 +47,7 @@ CREATE SEQUENCE IF NOT EXISTS seq_carid START 1;
         res = self.connection.execute(sql)
         return res
 
-    def get_all(self) -> list[models.CarInfo]:
+    def get_all(self) -> list[tuple]:
         res = self.connection.execute("SELECT * FROM cars")
         res = res.fetchall()
         return res
@@ -60,14 +61,14 @@ CREATE SEQUENCE IF NOT EXISTS seq_carid START 1;
         self.connection.executemany(
             """INSERT INTO cars 
             (id, added_at, updated_at,
-             name, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
-            VALUES (nextval('seq_carid'), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+             make, model, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
+            VALUES (nextval('seq_carid'), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
             ON CONFLICT (vin) DO UPDATE 
             SET (updated_at,
-             name, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
-             = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)""",
+             make, model, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
+             = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)""",
             [(dt.datetime.now(), dt.datetime.now(),
-             car.name, car.year, car.generation, car.price, car.mileage, car.location, car.engine, 
+             car.make, car.model, car.year, car.generation, car.price, car.mileage, car.location, car.engine, 
              car.transmission, car.vin, car.plate, car.link, car.currency)
              for car in data]
         )

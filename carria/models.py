@@ -3,7 +3,8 @@ import dataclasses as dc
 
 @dc.dataclass
 class CarInfo:
-    name: str
+    make: str
+    model: str
     year: int
     generation: str
     price: int
