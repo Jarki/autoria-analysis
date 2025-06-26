@@ -1,6 +1,8 @@
+import asyncio
 import functools
+import functools as ft
 import logging
-from typing import Callable
+from typing import Callable, Any
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import bs4
@@ -128,3 +130,13 @@ def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
         link=link,
         currency=curr,
     )
+
+async def retry_func(func: ft.partial, retries: int=3, delay: int=1000) -> Any:
+    for i in range(retries):
+        try:
+            return await func()
+        except Exception as e:
+            logger.error(f"Error while parsing: {e}, {func.func.__name__}")
+            logger.debug(f"Retry {i + 1}. Retrying in {delay} ms")
+            await asyncio.sleep((delay + (i ** 2) * delay) / 1000)
+    raise Exception(f"Failed to parse after {retries} retries")
