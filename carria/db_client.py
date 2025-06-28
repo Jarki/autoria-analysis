@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS cars (
     added_at TIMESTAMP,
     updated_at TIMESTAMP,
 
+    autoria_id VARCHAR UNIQUE,
     make VARCHAR,
     model VARCHAR,
     year INTEGER,
@@ -37,7 +38,7 @@ CREATE TABLE IF NOT EXISTS cars (
     location VARCHAR,
     engine VARCHAR,
     transmission VARCHAR,
-    vin VARCHAR UNIQUE,
+    vin VARCHAR,
     plate VARCHAR,
     link VARCHAR,
     currency VARCHAR
@@ -61,14 +62,14 @@ CREATE SEQUENCE IF NOT EXISTS seq_carid START 1;
         self.connection.executemany(
             """INSERT INTO cars 
             (id, added_at, updated_at,
-             make, model, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
-            VALUES (nextval('seq_carid'), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
-            ON CONFLICT (vin) DO UPDATE 
+             autoria_id, make, model, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
+            VALUES (nextval('seq_carid'), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+            ON CONFLICT (autoria_id) DO UPDATE 
             SET (updated_at,
-             make, model, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
-             = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)""",
+             autoria_id, make, model, year, generation, price, mileage, location, engine, transmission, vin, plate, link, currency)
+             = ($2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)""",
             [(dt.datetime.now(), dt.datetime.now(),
-             car.make, car.model, car.year, car.generation, car.price, car.mileage, car.location, car.engine, 
-             car.transmission, car.vin, car.plate, car.link, car.currency)
+             car.id, car.make, car.model, car.year, car.generation, car.price, car.mileage, car.location, 
+             car.engine, car.transmission, car.vin, car.plate, car.link, car.currency)
              for car in data]
         )

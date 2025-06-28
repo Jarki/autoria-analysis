@@ -37,7 +37,7 @@ def __try_find(func: Callable) -> Callable:
         try:
             return func(*args, **kwargs)
         except Exception as e:
-            logger.error(f"Error while parsing: {e} ({func.__name__})")
+            logger.debug(f"Error while parsing: {e} ({func.__name__})")
             return ""
     return wrapper
 
@@ -95,10 +95,15 @@ def get_make(section: bs4.element.Tag) -> models.CarInfo:
 def get_model(section: bs4.element.Tag) -> models.CarInfo:
     return section.find("div", class_="hide").get("data-model-name")
 
+@__try_find
+def get_autoria_id(section: bs4.element.Tag) -> str:
+    return section.find("div", class_="hide").get("data-id")
+
 def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
     with open("car.html", "w") as f:
         f.write(section.prettify())
     price, curr = get_price_and_currency(section)
+    id_ = get_autoria_id(section)
     mileage = get_mileage(section)
     location = get_location(section)
     engine = get_engine(section)
@@ -116,6 +121,7 @@ def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
     mileage = utils.parse_integer(mileage)
     
     return models.CarInfo(
+        id=id_,
         make=make,
         model=model,
         year=year, 
