@@ -26,6 +26,14 @@ def get_page_url(url: str, page_num: int):
     new_url = urlunparse(parsed._replace(query=new_query))
     return new_url
 
+def add_size_to_url(url: str, size: int=100) -> str:
+    parsed = urlparse(url)
+    params = parse_qs(parsed.query)
+    params['size'] = size
+    new_query = urlencode(params, doseq=True)
+    new_url = urlunparse(parsed._replace(query=new_query))
+    return new_url
+
 def __try_get_text(tag: bs4.element.Tag, default: str = "") -> str:
     if tag is not None:
         return tag.get_text(strip=True)
