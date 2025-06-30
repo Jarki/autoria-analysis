@@ -1,11 +1,12 @@
 import asyncio
 import logging
+import logging.config
 
 import carria
 
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logging.config.dictConfig(carria.LOGGING_CONFIG)
+logger = logging.getLogger("carria")
 
 async def main():
     db_client = carria.db_client.DuckDbClient("golf_gti.duckdb")
