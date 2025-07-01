@@ -2,7 +2,8 @@ import asyncio
 import functools
 import functools as ft
 import logging
-from typing import Callable, Any
+import re
+from typing import Any, Callable
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import bs4
@@ -144,6 +145,16 @@ def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
         link=link,
         currency=curr,
     )
+
+def get_total_expected_cars(html_page: bs4.BeautifulSoup) -> int:
+    try:
+        with open("car.html", "w") as f:
+            f.write(str(html_page.prettify()))
+        # TODO: is this the best way?
+        count = re.search(r"window.ria.server.resultsCount\s*=\s*Number\((\d+)\);", str(html_page)).group(1)
+        return int(count)
+    except Exception:
+        return 0
 
 async def retry_func(func: ft.partial, retries: int=3, delay: int=1000) -> Any:
     for i in range(retries):
