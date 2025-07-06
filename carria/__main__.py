@@ -8,11 +8,12 @@ logging.config.dictConfig(carria.LOGGING_CONFIG)
 logger = logging.getLogger("carria")
 
 async def main():
-    db_name = "data/search_results.duckdb"
-    url = "https://auto.ria.com/uk/search/?indexName=auto,order_auto,newauto_search&categories.main.id=1&price.currency=1&abroad.not=0&custom.not=-1&damage.not=1"
+    db_name = "data/hondacivic.duckdb"
+    url = "https://auto.ria.com/uk/search/?indexName=auto,order_auto,newauto_search&price.currency=1&abroad.not=-1&custom.not=1&damage.not=1&brand.id[0]=28&model.id[0]=265"
+    max_concurrent_requests = 5
 
-    parser= carria.parser.Parser()
-    await parser.parse_all_from_search(url, db_name)
+    parser= carria.parser.Parser(url, db_name, max_concurrent_requests)
+    await parser.parse_all_from_search()
 
 if __name__ == "__main__":
     try:
