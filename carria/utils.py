@@ -109,8 +109,6 @@ def get_autoria_id(section: bs4.element.Tag) -> str:
     return section.find("div", class_="hide").get("data-id")
 
 def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
-    with open("car.html", "w") as f:
-        f.write(section.prettify())
     price, curr = get_price_and_currency(section)
     id_ = get_autoria_id(section)
     mileage = get_mileage(section)
@@ -148,8 +146,6 @@ def get_car_info(section: bs4.element.Tag) -> models.CarInfo:
 
 def get_total_expected_cars(html_page: bs4.BeautifulSoup) -> int:
     try:
-        with open("car.html", "w") as f:
-            f.write(str(html_page.prettify()))
         # TODO: is this the best way?
         count = re.search(r"window.ria.server.resultsCount\s*=\s*Number\((\d+)\);", str(html_page)).group(1)
         return int(count)
